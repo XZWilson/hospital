@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>新增用户</title>
+    <link rel="stylesheet" href="element-ui/lib/theme-chalk/index.css">
+    <script src="js/vue.js"></script>
+    <script src="element-ui/lib/index.js"></script>
+    <script src="js/axios-0.18.0.js"></script>
+    <style>
+        .avatar-uploader .el-upload {
+            border: 1px dashed #d9d9d9;
+            border-radius: 6px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        .avatar-uploader .el-upload:hover {
+            border-color: #409EFF;
+        }
+        .avatar-uploader-icon {
+            font-size: 28px;
+            color: #8c939d;
+            width: 78px;
+            height: 78px;
+            line-height: 78px;
+            text-align: center;
+        }
+        .avatar {
+            width: 78px;
+            height: 78px;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+<div id="div">
+    <h4>创建就诊卡</h4>
+    <el-form :model="patientForm" :rules="rules" ref="patientForm" label-width="100px">
+        <el-form-item label="病人姓名" prop="name">
+            <el-input v-model.trim="patientForm.name" placeholder="请输入病人姓名"></el-input>
+        </el-form-item>
+        <el-form-item label="手机号" prop="phone">
+            <el-input v-model="patientForm.phone" placeholder="请输入11位手机号"></el-input>
+        </el-form-item>
+        <el-form-item label="家庭地址" prop="address">
+            <el-input  v-model.trim="patientForm.address" placeholder="请输入家庭地址"></el-input>
+        </el-form-item>
+        <el-form-item label="医保卡号" prop="idMedicare">
+            <el-input  v-model="patientForm.idMedicare" @blur="getIsMedicare()" placeholder="格式为：xxx-xx-xxxx"></el-input>
+        </el-form-item>
+        <el-form-item label="身份证号" prop="idCard">
+            <el-input  v-model="patientForm.idCard" @blur="getBirthAndSex()" placeholder="身份证号必须是11位,请注意地址码、出生年月等正确性"></el-input>
+        </el-form-item>
+        <el-form-item label="出生日期" prop="birthday">
+            <el-input v-model="patientForm.birthday" disabled></el-input>
+        </el-form-item>
+
+        <el-form-item label="性别" prop="sex">
+            <el-select v-model="patientForm.sex" disabled placeholder="">
+                <el-option
+                        v-for="item in options"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value">
+                </el-option>
+            </el-select>
+        </el-form-item>
+        <el-form-item>
+            <el-button type="primary" @click="submitForm('patientForm')">保存</el-button>
+            <el-button @click="resetForm('patientForm')">返回</el-button>
+        </el-form-item>
+    </el-form>
+</div>
+</body>
+<script type="application/javascript">
+    new Vue({
+            el: '#div',
+            data(){
+                //手机号校验
+                var checkPhone = (rule, value, callback) => {
+                    //电话号码正则表达式
+                    const reg = /^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}$/;
+                    if (value.length !== 11){
+                        callback(new Error("手机号必须是11位"));
+                    }else if (!reg.test(value)){
+                        callback(new Error("手机号格式不正确"));
+                    }else callback();
+                }
+
+                var checkIdMedicare = (rule, value, callback) => {
+                    //医保号正则表达式
+                    const reg = /^[\d]{3}-[\d]{2}-[\d]{4}$/;
+                    if (value !== null && value !== "" && !reg.test(value)){
+                        callback(new Error("医保卡号格式不正确"));
+                    }else callback();
+                }
+                //身份证号基础格式的验证
+                var checkCode = function (val) {
+                    var p = /^[1-9]\d{5}(18|19|20)\d{2}((0[1-9])|(1[0-2]))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$/;
+                    if(p.test(val)) {
+                        return true;
+                    }
+                    return false;
+                }
+                //校验身份证前六位地址码
+                var checkProv = function (val) {
+                    var pattern = /^[1-9][0-9]/;
+                    var provs = {11:"北京",12:"天津",13:"河北",14:"山西",15:"内蒙古",21:"辽宁",22:"吉林",23:"黑龙江 ",31:"上海",32:"江苏",33:"浙江",34:"安徽",35:"福建",36:"江西",37:"山东",41:"河南",42:"湖北 ",43:"湖南",44:"广东",45:"广西",46:"海南",50:"重庆",51:"四川",52:"贵州",53:"云南",54:"西藏 ",61:"陕西",62:"甘肃",63:"青海",64:"宁夏",65:"新疆",71:"台湾",81:"香港",82:"澳门"};
+                    if(pattern.test(val)) {
+                        if(provs[val]) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+                //检查后八位出生日期
+                var checkDate = function (val) {
+                    var pattern = /^(18|19|20)\d{2}((0[1-9])|(1[0-2]))(([0-2][1-9])|10|20|30|31)$/;
+                    if(pattern.test(val)) {
+                        var year = val.substring(0, 4);
+                        var month = val.substring(4, 6);
+                        var date = val.substring(6, 8);
+                        var date2 = new Date(year+"-"+month+"-"+date);
+                        if(date2 && date2.getMonth() == (parseInt(month) - 1)) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+
+                var checkIdCard = (rule, value, callback) => {
+                    // console.log(checkCode(value));
+                    // console.log(checkProv(value.substr(0,2)));
+                    // console.log(checkDate(value.substr(6,8)));
+                    if (checkCode(value) &&
+                        checkProv(value.substr(0,2)) &&
+                        checkDate(value.substr(6,8))){//校验身份证基本格式
+                        callback();
+                    }else{
+                        callback(new Error("身份证号格式有误！"));
+                    }
+                }
+                return{
+                    patientForm: {
+                        name: '',
+                        phone: '',
+                        address: '',
+                        isMedicare:1,
+                        idMedicare: '',
+                        idCard: '',
+                        birthday: '',
+                        sex:''
+                    },
+                    options: [{value: 1, label: '女'}, {value: 2, label: '男'}],
+                    rules: {
+                        name: [
+                            { required: true, message: '病人姓名不能为空', trigger: 'blur' }
+                        ],
+                        phone: [
+                            {validator: checkPhone , trigger: 'blur' },
+                            { required: true, message: '手机号不能为空', trigger: 'blur' }
+                        ],
+                        address: [
+                            { required: true, message: '家庭地址不能为空', trigger: 'blur' }
+                        ],
+                        idMedicare:[
+                            { validator: checkIdMedicare , trigger: 'blur' }
+                        ],
+                        idCard: [
+                            { validator: checkIdCard , trigger: 'blur' },
+                            { required: true, message: '身份证号不能为空', trigger: 'blur' }
+                        ]
+                    }
+                }
+            },
+            methods: {
+                submitForm(formName) {
+                    this.$refs[formName].validate((valid) => {
+                        if (valid) {
+                            axios.post("patient/addPatient",this.patientForm).then((ret) => {
+                                if (ret.data.code == "1"){
+                                    this.$message({
+                                        message: '添加成功！',
+                                        type: 'success',
+                                        onClose:()=>{location.reload()}
+                                    });
+                                }else{
+                                    this.$message.error("添加失败！" + ret.data.message);
+                                }
+                            })
+                        } else {
+                            this.$message({
+                                message: '请检查就诊卡信息是否填写正确',
+                                type: 'warning'
+                            });
+                            return false;
+                        }
+                    });
+                },
+                resetForm(formName) {
+                    this.$refs[formName].resetFields();
+                },
+                getBirthAndSex() {
+                    let idNum = this.patientForm.idCard;
+                    if (idNum !== "" &&
+                        idNum.length === 18) {
+                        //将身份证上的日期解析并格式化
+                        const dateStr = idNum.substr(6,8);
+                        // console.log(dateStr);
+                        const year = dateStr.slice(0, 4);
+                        const month = dateStr.slice(4, 6);
+                        const day = dateStr.slice(6, 8);
+                        const formatDate = `${year}-${month}-${day}`;
+                        // console.log(formatDate);
+                        this.patientForm.birthday = formatDate;
+                        //第17位数字是奇数就是男性，偶数是女性
+                        this.patientForm.sex = idNum.charAt(16) % 2 > 0 ? 2 : 1;
+                    }else{//表单清空
+                        this.patientForm.birthday = "";
+                        this.patientForm.sex = "";
+                    }
+                },
+                getIsMedicare(){
+                    let idMedi = this.patientForm.idMedicare
+                    if (idMedi!==null && idMedi !== ""){
+                        this.patientForm.isMedicare = 2
+                    }else{
+                        this.patientForm.isMedicare = 1
+                    }
+                }
+            }
+        }
+    );
+</script>
+</html>

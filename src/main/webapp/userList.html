@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用户管理</title>
+    <link rel="stylesheet" href="element-ui/lib/theme-chalk/index.css">
+    <script src="js/vue.js"></script>
+    <script src="element-ui/lib/index.js"></script>
+    <script src="js/axios-0.18.0.js"></script>
+</head>
+<body>
+<div id="div">
+    <b style="font-size: 15px;">用户信息管理</b>
+    <div style="float:right">
+        <!--<el-button type="primary" @click="addUser()">新增用户信息</el-button>-->
+    </div>
+    <el-table :data="tableData">
+        <el-table-column prop="id" label="编号" width="100">
+        </el-table-column>
+        <el-table-column prop="userTypeName" label="用户类型" width="120">
+        </el-table-column>
+        <el-table-column prop="account" label="账号" width="180">
+        </el-table-column>
+        <el-table-column prop="userName" label="用户名" width="200">
+        </el-table-column>
+        <el-table-column prop="createdTime" label="创建时间" width="200">
+        </el-table-column>
+        <el-table-column prop="createdUserId" label="创建人ID" width="200">
+        </el-table-column>
+    </el-table>
+    <el-pagination
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page.sync="pagination.pageIndex"
+            :page-sizes="[4, 5, 8]"
+            :page-size.sync="pagination.pageSizes"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="pagination.total">
+    </el-pagination>
+</div>
+</body>
+<script type="application/javascript">
+    new Vue({
+            el: '#div',
+            data: {
+                tableData:null,
+                pagination:{
+                    pageIndex:1,
+                    pageSizes:4,
+                    total:0
+                }
+            },
+            mounted:function () {
+                this.loadSysUsers();
+            },
+            methods: {
+                loadSysUsers:function () {
+                    axios.get(
+                        "users/showSysUsersByPage",
+                        {params: {
+                            pageIndex: this.pagination.pageIndex,
+                            pageSize: this.pagination.pageSizes
+                            }
+                        }).then((ret) => {
+                            //获取当前页用户数据
+                            this.tableData = ret.data.data.sysUsers;
+                            //获取分页相关信息
+                            this.pagination.total = ret.data.data.totalRecord;
+                    })
+                },
+                //跳页时通过事件驱动该方法
+                handleCurrentChange:function () {
+                    this.loadSysUsers();
+                },
+                //切换页面大小时通过事件驱动该方法
+                handleSizeChange:function () {
+                    console.log(111)
+                    this.pagination.pageIndex = 1;
+                    this.loadSysUsers();
+                }
+            }
+        }
+    );
+</script>
+</html>

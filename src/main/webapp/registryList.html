@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用户管理</title>
+    <link rel="stylesheet" href="element-ui/lib/theme-chalk/index.css">
+    <script src="js/vue.js"></script>
+    <script src="element-ui/lib/index.js"></script>
+    <script src="js/axios-0.18.0.js"></script>
+    <style type="text/css">
+        .el-form-item {
+            display: inline-block !important;
+            float: left;
+            width: 400px;
+        }
+        .el-dialog__body {
+            padding: 5px 30px;
+        }
+    </style>
+</head>
+<body>
+<div id="div">
+    <b style="font-size: 15px;">挂号信息管理</b>
+    <div style="margin-top: 30px;margin-bottom: 20px;padding-left: 10px">
+        <el-row>
+            <el-col :span=5>
+                身份证号:
+                <el-input v-model="searchForm.idCard" size="mini" style="width: 180px"></el-input>
+            </el-col>
+
+            <el-col :span=4>
+                就诊科室:
+                <el-select v-model="searchForm.departmentId" clearable filterable placeholder="请选择" size="mini" style="width: 130px" @change="getDoctorList()">
+                    <el-option
+                            v-for="item in departmentList"
+                            :key="item.id"
+                            :label="item.name"
+                            :value="item.id">
+                    </el-option>
+                </el-select>
+            </el-col>
+
+            <el-col :span=4>
+                挂号医师:
+                <el-select v-model="searchForm.userId" clearable filterable placeholder="请选择" size="mini" style="width: 130px">
+                    <el-option
+                            v-for="item in docterList"
+                            :key="item.id"
+                            :label="item.userName"
+                            :value="item.id">
+                    </el-option>
+                </el-select>
+            </el-col>
+            <el-col :span=5>
+                挂号单状态:
+                <el-select v-model="searchForm.status" clearable filterable placeholder="请选择" size="mini" style="width: 130px">
+                    <el-option
+                            v-for="item in statusList"
+                            :key="item.id"
+                            :label="item.name"
+                            :value="item.id">
+                    </el-option>
+                </el-select>
+            </el-col>
+            <el-col :span=4>
+                <el-button type="primary" @click="getRegistryListByPage()" size="mini" style="width: 100px">查询
+                </el-button>
+            </el-col>
+        </el-row>
+    </div>
+    <el-table :data="tableData">
+        <el-table-column prop="id" label="挂号单编号" width="100">
+        </el-table-column>
+        <el-table-column prop="pname" label="病人姓名" width="100">
+        </el-table-column>
+        <el-table-column prop="psex" :formatter="sexParse" label="性别" width="80">
+        </el-table-column>
+        <el-table-column prop="pcardId" label="身份证号" width="200">
+        </el-table-column>
+        <el-table-column prop="dname" label="就诊科室" width="130">
+        </el-table-column>
+        <el-table-column prop="regTime" label="挂号时间" width="170">
+        </el-table-column>
+        <el-table-column prop="createTime" label="创建时间" width="170">
+        </el-table-column>
+        <el-table-column prop="status" :formatter="statusParse" label="挂号单状态" width="170">
+        </el-table-column>
+        <el-table-column label="操作" width="120">
+            <template slot-scope="scope">
+                <el-button type="info" @click="detailRegistry(scope.row.id)">查看详情</el-button>
+            </template>
+        </el-table-column>
+    </el-table>
+    <el-pagination
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page.sync="pagination.currentPage"
+            :page-sizes="[4, 5, 8]"
+            :page-size.sync="pagination.pageSize"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="pagination.total">
+    </el-pagination>
+    <!--挂号单详情-->
+    <el-dialog title="查看挂号信息" :visible.sync="dialogFormVisible" width="70%">
+        <h4>病人信息</h4>
+        <el-form :model="form" size="mini">
+            <el-form-item label="姓名" :label-width="formLabelWidth">
+                <el-input v-model="form.pname" autocomplete="off" disabled></el-input>
+            </el-form-item>
+            <el-form-item label="身份证号" :label-width="formLabelWidth">
+                <el-input v-model="form.pidCard" autocomplete="off" disabled></el-input>
+            </el-form-item>
+            <el-form-item label="性别" :label-width="formLabelWidth">
+                <el-input v-model="form.psex" autocomplete="off" disabled></el-input>
+            </el-form-item>
+            <el-form-item label="出生日期" :label-width="formLabelWidth">
+                <el-input v-model="form.pbirthday" autocomplete="off" disabled></el-input>
+            </el-form-item>
+            <el-form-item label="家庭住址" :label-width="formLabelWidth">
+                <el-input v-model="form.paddress" autocomplete="off" disabled></el-input>
+            </el-form-item>
+            <hr class="input_width" style="width: 90%"/>
+            <h4>挂号信息</h4>
+            <el-form-item label="挂号单编号" :label-width="formLabelWidth">
+                <el-input v-model="form.rgId" autocomplete="off" disabled></el-input>
+            </el-form-item>
+            <el-form-item label="就诊科室" :label-width="formLabelWidth">
+                <el-input v-model="form.dname" autocomplete="off" disabled></el-input>
+            </el-form-item>
+            <el-form-item label="就诊房间" :label-width="formLabelWidth">
+                <el-input v-model="form.rmName" autocomplete="off" disabled></el-input>
+            </el-form-item>
+            <el-form-item label="挂号医师" :label-width="formLabelWidth">
+                <el-input v-model="form.regDocName" autocomplete="off" disabled></el-input>
+            </el-form-item>
+            <el-form-item label="就诊时间" :label-width="formLabelWidth">
+                <el-input v-model="form.regConSulTime" autocomplete="off" disabled></el-input>
+            </el-form-item>
+            <el-form-item label="挂号时间" :label-width="formLabelWidth">
+                <el-input v-model="form.regTime" autocomplete="off" disabled></el-input>
+            </el-form-item>
+
+            <hr class="input_width" style="width: 90%"/>
+            <h4>医嘱信息</h4>
+            <el-form-item label="病人主诉" style="width: 750px;clear:left;" :label-width="formLabelWidth">
+                <el-input v-model="form.chiefComplaint" type="textarea" :rows="4" autocomplete="off" disabled></el-input>
+            </el-form-item>
+            <el-form-item label="诊断结果" style="width: 750px;clear:left;" :label-width="formLabelWidth">
+                <el-input v-model="form.diagnosis" type="textarea" :rows="4" autocomplete="off" disabled></el-input>
+            </el-form-item>
+            <el-form-item label="就诊医师" :label-width="formLabelWidth">
+                <el-input v-model="form.maUserName" autocomplete="off" disabled></el-input>
+            </el-form-item>
+        </el-form>
+        <div style="height: 250px"></div>
+        <div slot="footer" class="dialog-footer" style="text-align: center">
+            <el-button type="primary" @click="dialogFormVisible = false" size="mini">关  闭</el-button>
+        </div>
+    </el-dialog>
+</div>
+</body>
+<script type="application/javascript">
+    new Vue({
+            el: '#div',
+            data: {
+                searchForm: {
+                    departmentId: '',
+                    idCard: '',
+                    userId: '',
+                    status: ''
+                },
+                docterList: [],
+                statusList: [
+                    {id: 1, name: '已挂号，未问诊'},
+                    {id: 2, name: '正在问诊'},
+                    {id: 3, name: '结束问诊'}
+                ],
+                departmentList: [],
+                tableData: [],
+                pagination: {
+                    currentPage: 1,
+                    pageSize: 4,
+                    total: 0
+                },
+                dialogFormVisible: false,
+                form: {
+                    pidCard: "",
+                    rgId: "",
+                    rmName: "",
+                    regDocName: "",
+                    regTime: "",
+                    regConSulTime: "",
+                    createTime: "",
+                    chiefComplaint: "",
+                    diagnosis: "",
+                    maUserName: "",
+                    dname: "",
+                    pbirthday: "",
+                    paddress: "",
+                    pname: "",
+                    psex: ""
+                },
+                formLabelWidth: '120px'
+            },
+            mounted(){
+                //渲染结束后，载入数据
+                this.getDepartmentList();
+                this.getRegistryListByPage();
+            },
+            methods: {
+                //获取就诊科室
+                getDepartmentList(){
+                    axios.get("department/getDepartments").then(ret=>{
+                        if (ret.data.code == 1){
+                            this.departmentList = ret.data.data;
+                        }
+                    })
+                },
+                getDoctorList(){
+                    this.searchForm.userId = "";
+                    axios.get("users/getDoctorByDepartId",
+                        {params:{departmentId:this.searchForm.departmentId}}).then(ret=>{
+                        if (ret.data.code == 1){
+                            this.docterList = ret.data.data;
+                        }
+                    })
+                },
+                getRegistryListByPage() {
+                    axios.post("registry/searchByConAndPage",
+                        {
+                            pageIndex: this.pagination.currentPage,
+                            pageSize: this.pagination.pageSize,
+                            cardId: this.searchForm.idCard,
+                            departmentId: this.searchForm.departmentId,
+                            userId: this.searchForm.userId,
+                            status: this.searchForm.status
+                        }
+                    ).then(ret => {
+                        this.tableData = ret.data.data.list;
+                        this.pagination.total = ret.data.data.total;
+                    })
+                },
+                detailRegistry(rowId) {
+                    this.dialogFormVisible = true;
+                    Object.keys(this.form).forEach(key => (this.form[key] = ''));
+                    axios.get(
+                        "registry/regDetailById",
+                        {params: {id:rowId}}
+                    ).then(ret=>{
+                        if (ret.data.code == 1){
+                            this.form = ret.data.data;
+                        }
+                    })
+                },
+                sexParse(row, column, cellValue) {
+                    let str = '';
+                    switch (cellValue) {
+                        case 1:
+                            str = "男";
+                            break;
+                        case 2:
+                            str = "女";
+                            break;
+                    }
+                    return str;
+                },
+                statusParse(row, column, cellValue) {
+                    let str = '';
+                    switch (cellValue) {
+                        case 1:
+                            str = "已挂号，未问诊";
+                            break;
+                        case 2:
+                            str = "正在问诊";
+                            break;
+                        case 3:
+                            str = "问诊结束";
+                            break;
+                    }
+                    return str;
+                },
+                //功能：改变查询每页显示的条数，pagination组件会自动传递选择的pageSize
+                handleSizeChange() {
+                    this.pagination.currentPage = 1;
+                    this.getRegistryListByPage();
+
+                },
+                //功能：翻页查询，pagination组件会自动传递当前页号currentPage
+                handleCurrentChange() {
+                    this.getRegistryListByPage();
+
+                }
+            }
+        }
+    );
+</script>
+</html>
