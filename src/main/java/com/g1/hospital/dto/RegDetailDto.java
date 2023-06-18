@@ -1,5 +1,8 @@
 package com.g1.hospital.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.util.Date;
 
 /**
@@ -9,16 +12,20 @@ import java.util.Date;
  */
 public class RegDetailDto {
     private String pName;
-    private Byte pSex;
+    private String pSex;
     private String pidCard;
+    @JsonFormat(pattern = "yyyy-MM-dd",timezone = "GMT+8")
     private Date pBirthday;
     private String pAddress;
     private Long rgId;
     private String dName;
     private String rmName;
     private String regDocName;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date regTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date regConSulTime;
+    @JsonFormat(pattern = "yyyy-mm-dd HH:mm:ss",timezone = "GMT +8")
     private Date createTime;
     private String chiefComplaint;
     private String diagnosis;
@@ -27,7 +34,7 @@ public class RegDetailDto {
     public RegDetailDto() {
     }
 
-    public RegDetailDto(String pName, Byte pSex, String pidCard, Date pBirthday, String pAddress, Long rgId, String dName, String rmName, String regDocName, Date regTime, Date regConSulTime, Date createTime, String chiefComplaint, String diagnosis, String maUserName) {
+    public RegDetailDto(String pName, String pSex, String pidCard, Date pBirthday, String pAddress, Long rgId, String dName, String rmName, String regDocName, Date regTime, Date regConSulTime, Date createTime, String chiefComplaint, String diagnosis, String maUserName) {
         this.pName = pName;
         this.pSex = pSex;
         this.pidCard = pidCard;
@@ -65,7 +72,7 @@ public class RegDetailDto {
      * 获取
      * @return pSex
      */
-    public Byte getPSex() {
+    public String getPSex() {
         return pSex;
     }
 
@@ -73,7 +80,7 @@ public class RegDetailDto {
      * 设置
      * @param pSex
      */
-    public void setPSex(Byte pSex) {
+    public void setPSex(String pSex) {
         this.pSex = pSex;
     }
 

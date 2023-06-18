@@ -63,7 +63,9 @@
                 </el-select>
             </el-col>
             <el-col :span=4>
-                <el-button type="primary" @click="getRegistryListByPage()" size="mini" style="width: 100px">查询
+                <el-button type="primary" @click="getRegistryListCondition()" size="mini" style="width: 100px">查询
+                </el-button>
+                <el-button type="primary" @click="resetCondition()" size="mini" style="width: 100px">重置
                 </el-button>
             </el-col>
         </el-row>
@@ -114,7 +116,7 @@
                 <el-input v-model="form.psex" autocomplete="off" disabled></el-input>
             </el-form-item>
             <el-form-item label="出生日期" :label-width="formLabelWidth">
-                <el-input v-model="form.pbirthday" autocomplete="off" disabled></el-input>
+                <el-input v-model="form.pBirthday" autocomplete="off" disabled></el-input>
             </el-form-item>
             <el-form-item label="家庭住址" :label-width="formLabelWidth">
                 <el-input v-model="form.paddress" autocomplete="off" disabled></el-input>
@@ -205,7 +207,7 @@
             mounted(){
                 //渲染结束后，载入数据
                 this.getDepartmentList();
-                this.getRegistryListByPage();
+                this.loadRegsByPage();
             },
             methods: {
                 //获取就诊科室
@@ -225,7 +227,11 @@
                         }
                     })
                 },
-                getRegistryListByPage() {
+                getRegistryListCondition() {
+                    this.pagination.pageIndex = 1;
+                    this.loadRegsByPage();
+                },
+                loadRegsByPage(){
                     axios.post("registry/searchByConAndPage",
                         {
                             pageIndex: this.pagination.currentPage,
@@ -239,7 +245,8 @@
                         this.tableData = ret.data.data.list;
                         this.pagination.total = ret.data.data.total;
                     })
-                },
+                }
+                ,
                 detailRegistry(rowId) {
                     this.dialogFormVisible = true;
                     Object.keys(this.form).forEach(key => (this.form[key] = ''));
@@ -282,13 +289,17 @@
                 //功能：改变查询每页显示的条数，pagination组件会自动传递选择的pageSize
                 handleSizeChange() {
                     this.pagination.currentPage = 1;
-                    this.getRegistryListByPage();
+                    this.getRegistryListCondition();
 
                 },
                 //功能：翻页查询，pagination组件会自动传递当前页号currentPage
                 handleCurrentChange() {
-                    this.getRegistryListByPage();
-
+                    this.getRegistryListCondition();
+                },
+                //重置查询条件
+                resetCondition(){
+                    //条件对象清除
+                    Object.keys(this.searchForm).forEach(key => (this.searchForm[key] = ''));
                 }
             }
         }

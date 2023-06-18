@@ -105,7 +105,7 @@
       select
         -- 查询病人信息
         pa.`name` pName,
-        pa.`sex` pSex,
+        case sex when 1 then "男" when 2 then "女" end pSex,
         pa.`id_card` pidCard,
         pa.`birthday` pBirthday,
         pa.`address` pAddress,
