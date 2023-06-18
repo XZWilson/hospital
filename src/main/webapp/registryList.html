@@ -228,7 +228,7 @@
                     })
                 },
                 getRegistryListCondition() {
-                    this.pagination.pageIndex = 1;
+                    this.pagination.currentPage = 1;
                     this.loadRegsByPage();
                 },
                 loadRegsByPage(){
@@ -289,12 +289,12 @@
                 //功能：改变查询每页显示的条数，pagination组件会自动传递选择的pageSize
                 handleSizeChange() {
                     this.pagination.currentPage = 1;
-                    this.getRegistryListCondition();
+                    this.loadRegsByPage();
 
                 },
                 //功能：翻页查询，pagination组件会自动传递当前页号currentPage
                 handleCurrentChange() {
-                    this.getRegistryListCondition();
+                    this.loadRegsByPage();
                 },
                 //重置查询条件
                 resetCondition(){
