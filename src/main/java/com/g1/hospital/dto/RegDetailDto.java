@@ -27,13 +27,14 @@ public class RegDetailDto {
     private Date regConSulTime;
     @JsonFormat(pattern = "yyyy-mm-dd HH:mm:ss",timezone = "GMT +8")
     private Date createTime;
+    private Long maId;
     private String chiefComplaint;
     private String diagnosis;
 
     public RegDetailDto() {
     }
 
-    public RegDetailDto(String pName, String pSex, String pidCard, Date pBirthday, String pAddress, Long rgId, String dName, String rmName, String regDocName, String OpaDocName, Date regTime, Date regConSulTime, Date createTime, String chiefComplaint, String diagnosis) {
+    public RegDetailDto(String pName, String pSex, String pidCard, Date pBirthday, String pAddress, Long rgId, String dName, String rmName, String regDocName, String OpaDocName, Date regTime, Date regConSulTime, Date createTime, Long maId, String chiefComplaint, String diagnosis) {
         this.pName = pName;
         this.pSex = pSex;
         this.pidCard = pidCard;
@@ -47,6 +48,7 @@ public class RegDetailDto {
         this.regTime = regTime;
         this.regConSulTime = regConSulTime;
         this.createTime = createTime;
+        this.maId = maId;
         this.chiefComplaint = chiefComplaint;
         this.diagnosis = diagnosis;
     }
@@ -261,6 +263,22 @@ public class RegDetailDto {
 
     /**
      * 获取
+     * @return maId
+     */
+    public Long getMaId() {
+        return maId;
+    }
+
+    /**
+     * 设置
+     * @param maId
+     */
+    public void setMaId(Long maId) {
+        this.maId = maId;
+    }
+
+    /**
+     * 获取
      * @return chiefComplaint
      */
     public String getChiefComplaint() {
@@ -292,6 +310,6 @@ public class RegDetailDto {
     }
 
     public String toString() {
-        return "RegDetailDto{pName = " + pName + ", pSex = " + pSex + ", pidCard = " + pidCard + ", pBirthday = " + pBirthday + ", pAddress = " + pAddress + ", rgId = " + rgId + ", dName = " + dName + ", rmName = " + rmName + ", regDocName = " + regDocName + ", OpaDocName = " + OpaDocName + ", regTime = " + regTime + ", regConSulTime = " + regConSulTime + ", createTime = " + createTime + ", chiefComplaint = " + chiefComplaint + ", diagnosis = " + diagnosis + "}";
+        return "RegDetailDto{pName = " + pName + ", pSex = " + pSex + ", pidCard = " + pidCard + ", pBirthday = " + pBirthday + ", pAddress = " + pAddress + ", rgId = " + rgId + ", dName = " + dName + ", rmName = " + rmName + ", regDocName = " + regDocName + ", OpaDocName = " + OpaDocName + ", regTime = " + regTime + ", regConSulTime = " + regConSulTime + ", createTime = " + createTime + ", maId = " + maId + ", chiefComplaint = " + chiefComplaint + ", diagnosis = " + diagnosis + "}";
     }
 }

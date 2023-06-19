@@ -12,4 +12,5 @@ public interface RegistryService {
     Integer addRegistry(Registry registry);
     PageInfo<RegistryDto> searchRegistry(RegCondition regCondition);
     RegDetailDto searchRegDetailById(Long id);
+    Integer changeRegStatus(Long id, Byte status);
 }

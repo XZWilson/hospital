@@ -53,4 +53,12 @@ public class RegistryServiceImpl implements RegistryService {
     public RegDetailDto searchRegDetailById(Long id) {
         return this.registryMapper.selectRegDetailById(id);
     }
+
+    @Override
+    public Integer changeRegStatus(Long id, Byte status) {
+        Registry registry = new Registry();
+        registry.setId(id);
+        registry.setStatus(status);
+        return this.registryMapper.updateByPrimaryKeySelective(registry);
+    }
 }

@@ -29,7 +29,7 @@
             </el-col>
             <el-col :span=4>
                 挂号医师:
-                <el-select v-model="searchForm.userId" clearable filterable placeholder="请选择" size="mini" style="width: 130px">
+                <el-select v-model="searchForm.regUserId" clearable filterable placeholder="请选择" size="mini" style="width: 130px">
                     <el-option
                             v-for="item in docterList"
                             :key="item.id"
@@ -93,7 +93,7 @@
             :total="pagination.total">
     </el-pagination>
     <!--挂号单详情-->
-    <el-dialog :title="title" :visible.sync="dialogFormVisible" width="70%">
+    <el-dialog :title="title" :visible.sync="dialogFormVisible" @close="closeDialog()" width="70%">
         <h4>病人信息</h4>
         <el-form :model="form" size="mini">
             <el-form-item label="姓名" :label-width="formLabelWidth">
@@ -142,7 +142,7 @@
                 <el-input v-model="form.diagnosis" type="textarea" :rows="4" autocomplete="off" :disabled="isVisible"></el-input>
             </el-form-item>
             <el-form-item label="就诊医师" :label-width="formLabelWidth">
-                <el-input v-model="form.maUserName" autocomplete="off" disabled></el-input>
+                <el-input v-model="form.opaDocName" autocomplete="off" disabled></el-input>
             </el-form-item>
         </el-form>
         <div style="height: 250px"></div>
@@ -165,7 +165,7 @@
                     departmentId: '',
                     patientId: '',
                     idCard: '',
-                    userId: '',
+                    regUserId: '',
                     status: ''
                 },
                 docterList: [],
@@ -193,12 +193,13 @@
                     rgId: "",
                     rmName: "",
                     regDocName: "",
+                    opaDocName: "",
                     regTime: "",
                     regConSulTime: "",
                     createTime: "",
                     chiefComplaint: "",
                     diagnosis: "",
-                    maUserName: "",
+                    maId:"",
                     dname: "",
                     pbirthday: "",
                     paddress: "",
@@ -213,10 +214,54 @@
             },
             methods: {
                 addMedicalAdvice(){
-
+                    axios.post(
+                        "advice/addMdAdvice",
+                        {
+                            id: this.form.maId,
+                            registryId: this.form.rgId,
+                            userId: JSON.parse(localStorage.getItem("userInfo")).id,
+                            chiefComplaint: this.form.chiefComplaint,
+                            diagnosis: this.form.diagnosis
+                        }
+                    ).then(ret=>{
+                        if (ret.data.code == 1){
+                            this.$notify({
+                                title: '成功',
+                                message: '医嘱添加/修改完成',
+                                type: 'success'
+                            });
+                        }else{
+                            this.$notify.error({
+                                title: '错误',
+                                message: '医嘱添加/修改异常'
+                            });
+                        }
+                        this.closeDialog();
+                        this.loadRegsByPage();
+                    })
                 },
                 stopDiagnostic(){
-
+                    axios.get("registry/changeRegStatus",
+                        {params:{
+                                id:this.form.rgId,
+                                status:3
+                            }}).then(ret=>{
+                        if (ret.data.code == 1){
+                            this.$notify({
+                                title: '成功',
+                                message: '已结束就诊',
+                                type: 'success'
+                            });
+                            this.dialogFormVisible = false;
+                        }else{
+                            this.$notify.error({
+                                title: '错误',
+                                message: '就诊结束异常'
+                            });
+                            this.dialogFormVisible = false;
+                        }
+                        this.loadRegsByPage();
+                    })
                 },
                 closeDialog(){
                     this.dialogFormVisible = false;
@@ -288,8 +333,7 @@
                 getDoctorList(){
                     axios.get("users/getDoctorByDpIdAndType",
                         {params:{
-                            departmentId:JSON.parse(localStorage.getItem("userInfo")).departmentId,
-                            userType:3
+                            userType:2
                         }}).then(ret=>{
                         if (ret.data.code == 1){
                             this.docterList = ret.data.data;
@@ -304,7 +348,8 @@
                             pageSize: this.pagination.pageSize,
                             cardId: this.searchForm.idCard,
                             departmentId: JSON.parse(localStorage.getItem("userInfo")).departmentId,
-                            userId: this.searchForm.userId,
+                            userId: JSON.parse(localStorage.getItem("userInfo")).id,
+                            regUserId: this.searchForm.regUserId,
                             status: this.searchForm.status
                         }
                     ).then(ret => {

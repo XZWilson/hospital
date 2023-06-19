@@ -125,6 +125,7 @@
         rg.`consultation_time` regConSulTime,
         rg.`created_time` createTime,
         -- 医嘱
+        ma.`id` maId,
         ma.`chief_complaint` chiefComplaint,
         ma.`diagnosis` diagnosis,
         temp.user_name OpaDocName

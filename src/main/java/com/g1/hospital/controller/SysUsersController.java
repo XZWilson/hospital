@@ -185,9 +185,6 @@ public class SysUsersController {
     @ResponseBody
     public Result getDoctorByDpIdAndType(Long departmentId, Byte userType, HttpSession session){
         try {
-            if (departmentId == null){
-                departmentId =((SysUsers) session.getAttribute("sysUser")).getDepartmentId();
-            }
             List<UserDto> doctors = this.sysUsersService.getDoctorByDepartment(departmentId, userType);
             return new Result<List<UserDto>>("1","通过就诊科室查询医师成功",doctors);
         } catch (Exception e) {

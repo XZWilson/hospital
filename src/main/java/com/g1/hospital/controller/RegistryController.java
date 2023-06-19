@@ -4,10 +4,7 @@ import com.g1.hospital.dto.RegCondition;
 import com.g1.hospital.dto.RegDetailDto;
 import com.g1.hospital.dto.RegistryDto;
 import com.g1.hospital.pojo.*;
-import com.g1.hospital.service.DepartmentService;
-import com.g1.hospital.service.PatientService;
 import com.g1.hospital.service.RegistryService;
-import com.g1.hospital.service.ScheduleService;
 import com.g1.hospital.utils.Result;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +16,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpSession;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -80,6 +76,18 @@ public class RegistryController {
                                                   this.registryService.searchRegDetailById(id));
         } catch (Exception e) {
             return new Result("0","查询挂号详情异常，原因：" + e.getMessage());
+        }
+    }
+
+    @RequestMapping("changeRegStatus")
+    @ResponseBody
+    public Result endReg(Long id,Byte status){
+        try {
+            this.registryService.changeRegStatus(id, status);
+            return new Result("1",
+                    "调整挂号单状态为" + status + "成功");
+        } catch (Exception e) {
+            return new Result("0","调整挂号单状态为" + status + "异常，原因：" + e.getMessage());
         }
     }
 }
