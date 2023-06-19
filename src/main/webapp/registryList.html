@@ -41,7 +41,7 @@
             </el-col>
 
             <el-col :span=4>
-                挂号医师:
+                门诊医师:
                 <el-select v-model="searchForm.userId" clearable filterable placeholder="请选择" size="mini" style="width: 130px">
                     <el-option
                             v-for="item in docterList"
@@ -151,7 +151,7 @@
                 <el-input v-model="form.diagnosis" type="textarea" :rows="4" autocomplete="off" disabled></el-input>
             </el-form-item>
             <el-form-item label="就诊医师" :label-width="formLabelWidth">
-                <el-input v-model="form.maUserName" autocomplete="off" disabled></el-input>
+                <el-input v-model="form.opaDocName" autocomplete="off" disabled></el-input>
             </el-form-item>
         </el-form>
         <div style="height: 250px"></div>
@@ -169,7 +169,8 @@
                     departmentId: '',
                     idCard: '',
                     userId: '',
-                    status: ''
+                    status: '',
+
                 },
                 docterList: [],
                 statusList: [
@@ -190,12 +191,12 @@
                     rgId: "",
                     rmName: "",
                     regDocName: "",
+                    opaDocName: "",
                     regTime: "",
                     regConSulTime: "",
                     createTime: "",
                     chiefComplaint: "",
                     diagnosis: "",
-                    maUserName: "",
                     dname: "",
                     pbirthday: "",
                     paddress: "",
@@ -239,6 +240,7 @@
                             cardId: this.searchForm.idCard,
                             departmentId: this.searchForm.departmentId,
                             userId: this.searchForm.userId,
+                            regUserId: JSON.parse(localStorage.getItem("userInfo")).id,
                             status: this.searchForm.status
                         }
                     ).then(ret => {

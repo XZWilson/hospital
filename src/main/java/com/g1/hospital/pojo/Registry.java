@@ -12,8 +12,10 @@ public class Registry {
     private Long patientId;
 
     private Long scheduleId;
-
+    //用户表外键，同时代表门诊医师
     private Long userId;
+    //挂号员id
+    private Long regUserId;
 
     private Long departmentId;
 
@@ -48,12 +50,12 @@ public class Registry {
     public Registry() {
     }
 
-
-    public Registry(Long id, Long patientId, Long scheduleId, Long userId, Long departmentId, Long roomId, Byte status, BigDecimal fee, BigDecimal payFee, BigDecimal medicareFee, Byte isMedicare, Date registryTime, Date consultationTime, Date createdTime, Date updatedTime) {
+    public Registry(Long id, Long patientId, Long scheduleId, Long userId, Long regUserId, Long departmentId, Long roomId, Byte status, BigDecimal fee, BigDecimal payFee, BigDecimal medicareFee, Byte isMedicare, Date registryTime, Date consultationTime, Date createdTime, Date updatedTime) {
         this.id = id;
         this.patientId = patientId;
         this.scheduleId = scheduleId;
         this.userId = userId;
+        this.regUserId = regUserId;
         this.departmentId = departmentId;
         this.roomId = roomId;
         this.status = status;
@@ -129,6 +131,22 @@ public class Registry {
      */
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    /**
+     * 获取
+     * @return regUserId
+     */
+    public Long getRegUserId() {
+        return regUserId;
+    }
+
+    /**
+     * 设置
+     * @param regUserId
+     */
+    public void setRegUserId(Long regUserId) {
+        this.regUserId = regUserId;
     }
 
     /**
@@ -308,6 +326,6 @@ public class Registry {
     }
 
     public String toString() {
-        return "Registry{id = " + id + ", patientId = " + patientId + ", scheduleId = " + scheduleId + ", userId = " + userId + ", departmentId = " + departmentId + ", roomId = " + roomId + ", status = " + status + ", fee = " + fee + ", payFee = " + payFee + ", medicareFee = " + medicareFee + ", isMedicare = " + isMedicare + ", registryTime = " + registryTime + ", consultationTime = " + consultationTime + ", createdTime = " + createdTime + ", updatedTime = " + updatedTime + "}";
+        return "Registry{id = " + id + ", patientId = " + patientId + ", scheduleId = " + scheduleId + ", userId = " + userId + ", regUserId = " + regUserId + ", departmentId = " + departmentId + ", roomId = " + roomId + ", status = " + status + ", fee = " + fee + ", payFee = " + payFee + ", medicareFee = " + medicareFee + ", isMedicare = " + isMedicare + ", registryTime = " + registryTime + ", consultationTime = " + consultationTime + ", createdTime = " + createdTime + ", updatedTime = " + updatedTime + "}";
     }
 }

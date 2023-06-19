@@ -1,7 +1,6 @@
 package com.g1.hospital.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
@@ -21,6 +20,7 @@ public class RegDetailDto {
     private String dName;
     private String rmName;
     private String regDocName;
+    private String OpaDocName;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date regTime;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
@@ -29,12 +29,11 @@ public class RegDetailDto {
     private Date createTime;
     private String chiefComplaint;
     private String diagnosis;
-    private String maUserName;
 
     public RegDetailDto() {
     }
 
-    public RegDetailDto(String pName, String pSex, String pidCard, Date pBirthday, String pAddress, Long rgId, String dName, String rmName, String regDocName, Date regTime, Date regConSulTime, Date createTime, String chiefComplaint, String diagnosis, String maUserName) {
+    public RegDetailDto(String pName, String pSex, String pidCard, Date pBirthday, String pAddress, Long rgId, String dName, String rmName, String regDocName, String OpaDocName, Date regTime, Date regConSulTime, Date createTime, String chiefComplaint, String diagnosis) {
         this.pName = pName;
         this.pSex = pSex;
         this.pidCard = pidCard;
@@ -44,12 +43,12 @@ public class RegDetailDto {
         this.dName = dName;
         this.rmName = rmName;
         this.regDocName = regDocName;
+        this.OpaDocName = OpaDocName;
         this.regTime = regTime;
         this.regConSulTime = regConSulTime;
         this.createTime = createTime;
         this.chiefComplaint = chiefComplaint;
         this.diagnosis = diagnosis;
-        this.maUserName = maUserName;
     }
 
     /**
@@ -198,6 +197,22 @@ public class RegDetailDto {
 
     /**
      * 获取
+     * @return OpaDocName
+     */
+    public String getOpaDocName() {
+        return OpaDocName;
+    }
+
+    /**
+     * 设置
+     * @param OpaDocName
+     */
+    public void setOpaDocName(String OpaDocName) {
+        this.OpaDocName = OpaDocName;
+    }
+
+    /**
+     * 获取
      * @return regTime
      */
     public Date getRegTime() {
@@ -276,23 +291,7 @@ public class RegDetailDto {
         this.diagnosis = diagnosis;
     }
 
-    /**
-     * 获取
-     * @return maUserName
-     */
-    public String getMaUserName() {
-        return maUserName;
-    }
-
-    /**
-     * 设置
-     * @param maUserName
-     */
-    public void setMaUserName(String maUserName) {
-        this.maUserName = maUserName;
-    }
-
     public String toString() {
-        return "RegDetailDto{pName = " + pName + ", pSex = " + pSex + ", pidCard = " + pidCard + ", pBirthday = " + pBirthday + ", pAddress = " + pAddress + ", rgId = " + rgId + ", dName = " + dName + ", rmName = " + rmName + ", regDocName = " + regDocName + ", regTime = " + regTime + ", regConSulTime = " + regConSulTime + ", createTime = " + createTime + ", chiefComplaint = " + chiefComplaint + ", diagnosis = " + diagnosis + ", maUserName = " + maUserName + "}";
+        return "RegDetailDto{pName = " + pName + ", pSex = " + pSex + ", pidCard = " + pidCard + ", pBirthday = " + pBirthday + ", pAddress = " + pAddress + ", rgId = " + rgId + ", dName = " + dName + ", rmName = " + rmName + ", regDocName = " + regDocName + ", OpaDocName = " + OpaDocName + ", regTime = " + regTime + ", regConSulTime = " + regConSulTime + ", createTime = " + createTime + ", chiefComplaint = " + chiefComplaint + ", diagnosis = " + diagnosis + "}";
     }
 }

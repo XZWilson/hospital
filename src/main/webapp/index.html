@@ -206,8 +206,12 @@
                 },
                 logout(){
                     //请求后台，在Servlet中注销用户
-                    //跳转到登录页面
-                    location.href='login.html';
+                    axios.get("users/logout").then(
+                        ret => {
+                            //跳转到登录页面
+                            location.href='login.html';
+                        }
+                    )
                 },
                 //上传成功
                 handleAvatarSuccess(res, file) {

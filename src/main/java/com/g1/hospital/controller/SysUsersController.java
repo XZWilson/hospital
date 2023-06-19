@@ -48,6 +48,7 @@ public class SysUsersController {
         if (sysUsers != null){
             sysUsers.setPassword("");
             session.setAttribute("sysUser",sysUsers);
+            session.setMaxInactiveInterval(18000);
             return new Result<SysUsers>("1000","登录成功",sysUsers);
         }else{
             return new Result("1001","登录失败");
@@ -144,10 +145,10 @@ public class SysUsersController {
         try {
             if (session.getAttribute("sysUser") != null){
                 session.removeAttribute("sysUser");
-                return new Result("1000","session清除成功！");
+                return new Result("1","session清除成功！");
             }
         } catch (Exception e) {
-            return new Result("1001","session清除失败！失败原因："+e.getMessage());
+            return new Result("0","session清除失败！失败原因："+e.getMessage());
         }
 
         return new Result("1002","无session清除");

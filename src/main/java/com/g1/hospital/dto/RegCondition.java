@@ -12,15 +12,17 @@ public class RegCondition extends PageParameter {
     private Long departmentId;
     private Long userId;
     private Byte status;
+    private Long regUserId;
 
     public RegCondition() {
     }
 
-    public RegCondition(String cardId, Long departmentId, Long userId, Byte status) {
+    public RegCondition(String cardId, Long departmentId, Long userId, Byte status, Long regUserId) {
         this.cardId = cardId;
         this.departmentId = departmentId;
         this.userId = userId;
         this.status = status;
+        this.regUserId = regUserId;
     }
 
     /**
@@ -87,7 +89,23 @@ public class RegCondition extends PageParameter {
         this.status = status;
     }
 
+    /**
+     * 获取
+     * @return regUserId
+     */
+    public Long getRegUserId() {
+        return regUserId;
+    }
+
+    /**
+     * 设置
+     * @param regUserId
+     */
+    public void setRegUserId(Long regUserId) {
+        this.regUserId = regUserId;
+    }
+
     public String toString() {
-        return "RegCondition{cardId = " + cardId + ", departmentId = " + departmentId + ", userId = " + userId + ", status = " + status + "}";
+        return "RegCondition{cardId = " + cardId + ", departmentId = " + departmentId + ", userId = " + userId + ", status = " + status + ", regUserId = " + regUserId + "}";
     }
 }

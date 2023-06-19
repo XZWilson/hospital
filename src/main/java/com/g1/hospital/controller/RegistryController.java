@@ -3,10 +3,7 @@ package com.g1.hospital.controller;
 import com.g1.hospital.dto.RegCondition;
 import com.g1.hospital.dto.RegDetailDto;
 import com.g1.hospital.dto.RegistryDto;
-import com.g1.hospital.pojo.Department;
-import com.g1.hospital.pojo.Patient;
-import com.g1.hospital.pojo.Registry;
-import com.g1.hospital.pojo.Schedule;
+import com.g1.hospital.pojo.*;
 import com.g1.hospital.service.DepartmentService;
 import com.g1.hospital.service.PatientService;
 import com.g1.hospital.service.RegistryService;
@@ -19,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpSession;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -37,10 +35,15 @@ public class RegistryController {
 
     @RequestMapping("addRegistry")
     @ResponseBody
-    public Result addRegistry(@RequestBody Registry registry){
+    public Result addRegistry(@RequestBody Registry registry, HttpSession session){
+        //挂号时间
         registry.setRegistryTime(new Date());
+        //创建时间
         registry.setCreatedTime(registry.getRegistryTime());
+        //更新时间
         registry.setUpdatedTime(registry.getRegistryTime());
+        //挂号员id
+        registry.setRegUserId(((SysUsers)session.getAttribute("sysUser")).getId());
         Integer ret = 0;
         try {
             ret = this.registryService.addRegistry(registry);

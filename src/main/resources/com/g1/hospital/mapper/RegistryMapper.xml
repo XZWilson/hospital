@@ -6,6 +6,7 @@
     <result column="patient_id" jdbcType="BIGINT" property="patientId" />
     <result column="schedule_id" jdbcType="BIGINT" property="scheduleId" />
     <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="reg_user_id" jdbcType="BIGINT" property="regUserId" />
     <result column="department_id" jdbcType="BIGINT" property="departmentId" />
     <result column="room_id" jdbcType="BIGINT" property="roomId" />
     <result column="status" jdbcType="TINYINT" property="status" />
@@ -103,6 +104,9 @@
     <if test="status != null">
       and rg.status = #{status}
     </if>
+    <if test="regUserId != null">
+      and rg.reg_user_id = #{regUserId}
+    </if>
   </select>
     <select id="selectRegDetailById" resultType="com.g1.hospital.dto.RegDetailDto">
       select
@@ -123,16 +127,16 @@
         -- 医嘱
         ma.`chief_complaint` chiefComplaint,
         ma.`diagnosis` diagnosis,
-        temp.user_name maUserName
-      from registry rg
-       left join patient pa on rg.`patient_id` = pa.`id`
-       left join department dp on rg.`department_id` = dp.`id`
-       left join room rm on rg.`room_id` = rm.`id`
-       left join sys_users su on rg.`user_id` = su.`id`
-       left join medical_advice ma on rg.`id` = ma.`registry_id`
-       left join (select ma.`id`,su.`user_name` from medical_advice ma, sys_users su where ma.`user_id` = su.`id`)temp
-           on temp.id = ma.`id`
-       where rg.id = #{id}
+        temp.user_name OpaDocName
+        from registry rg
+         left join patient pa on rg.`patient_id` = pa.`id`
+         left join department dp on rg.`department_id` = dp.`id`
+         left join room rm on rg.`room_id` = rm.`id`
+         left join sys_users su on rg.reg_user_id = su.`id`
+         left join medical_advice ma on rg.`id` = ma.`registry_id`
+         left join (select ma.`registry_id`,su.`user_name` from medical_advice ma left join sys_users su on ma.`user_id` = su.id) temp
+                   on rg.id = temp.registry_id
+        where rg.id = #{id}
     </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from registry
@@ -166,6 +170,9 @@
       </if>
       <if test="userId != null">
         user_id,
+      </if>
+      <if test="regUserId != null">
+        reg_user_id,
       </if>
       <if test="departmentId != null">
         department_id,
@@ -213,6 +220,9 @@
       </if>
       <if test="userId != null">
         #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="regUserId != null">
+        #{regUserId,jdbcType=BIGINT},
       </if>
       <if test="departmentId != null">
         #{departmentId,jdbcType=BIGINT},
