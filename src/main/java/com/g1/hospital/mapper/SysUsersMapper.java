@@ -27,5 +27,6 @@ public interface SysUsersMapper {
     List<SysUsers> selectBySchedule(@Param("departmentId") Long departmentId,
                                     @Param("sign") Byte sign);
 
-    List<UserDto> selectByDepartMent(Long departmentId);
+    List<UserDto> selectByDpIdAndType(@Param("departmentId") Long departmentId,
+                                      @Param("userType") Byte userType);
 }

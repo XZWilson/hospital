@@ -1,7 +1,6 @@
 package com.g1.hospital.controller;
 
 import com.g1.hospital.dto.UserDto;
-import com.g1.hospital.pojo.Schedule;
 import com.g1.hospital.pojo.SysUsers;
 import com.g1.hospital.service.SysUsersService;
 import com.g1.hospital.utils.MD5Utils;
@@ -181,11 +180,14 @@ public class SysUsersController {
      * @Date 2023/6/16 16:10
      * @Author sugarmelon
      **/
-    @RequestMapping("getDoctorByDepartId")
+    @RequestMapping("getDoctorByDpIdAndType")
     @ResponseBody
-    public Result getDoctorByDepartId(Long departmentId){
+    public Result getDoctorByDpIdAndType(Long departmentId, Byte userType, HttpSession session){
         try {
-            List<UserDto> doctors = this.sysUsersService.getDoctorByDepartment(departmentId);
+            if (departmentId == null){
+                departmentId =((SysUsers) session.getAttribute("sysUser")).getDepartmentId();
+            }
+            List<UserDto> doctors = this.sysUsersService.getDoctorByDepartment(departmentId, userType);
             return new Result<List<UserDto>>("1","通过就诊科室查询医师成功",doctors);
         } catch (Exception e) {
             return new Result("0","通过就诊科室查询医师异常，原因是：" + e.getMessage());

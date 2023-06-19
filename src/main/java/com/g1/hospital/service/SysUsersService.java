@@ -12,5 +12,5 @@ public interface SysUsersService {
     public PageInfo<SysUsers> getSysUsers(PageParameter pageParameter);
     public int addSysUser(SysUsers sysUsers);
     public List<SysUsers> getUsersBySchedule(Long departmentId, Byte sign);
-    List<UserDto> getDoctorByDepartment(Long departmentId);
+    List<UserDto> getDoctorByDepartment(Long departmentId,Byte userType);
 }

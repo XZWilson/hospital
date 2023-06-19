@@ -166,11 +166,7 @@
                     userId: '',
                     status: ''
                 },
-                docterList: [
-                    {id: 1, userName: '张医生'},
-                    {id: 2, userName: '李医生'},
-                    {id: 3, userName: '赵医生'}
-                ],
+                docterList: [],
                 statusList: [
                     {id: 1, name: '已挂号，未问诊'},
                     {id: 2, name: '正在问诊'},
@@ -331,6 +327,9 @@
                 },
                 formLabelWidth: '120px'
             },
+            mounted(){
+                this.getDoctorList();
+            },
             methods: {
                 addMedicalAdvice(){
 
@@ -415,6 +414,17 @@
                 handleCurrentChange(currentPage) {
                     this.pagination.currentPage = currentPage;
 
+                },
+                getDoctorList(){
+                    axios.get("users/getDoctorByDpIdAndType",
+                        {params:{
+                            departmentId:JSON.parse(localStorage.getItem("userInfo")).departmentId,
+                            userType:3
+                        }}).then(ret=>{
+                        if (ret.data.code == 1){
+                            this.docterList = ret.data.data;
+                        }
+                    })
                 }
             }
         }

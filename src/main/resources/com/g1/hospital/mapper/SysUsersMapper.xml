@@ -87,12 +87,17 @@
         left join sys_users su
         on temp.user_id = su.`id`;
     </select>
-    <select id="selectByDepartMent" parameterType="long" resultType="com.g1.hospital.dto.UserDto">
+    <select id="selectByDpIdAndType" resultType="com.g1.hospital.dto.UserDto">
       select su.`id`,su.`user_name` as userName
-      from (select distinct sc.`department_id` from schedule sc) temp
-      left join sys_users su
-      on su.`department_id` = temp.department_id
-      where temp.department_id = #{departmentId}
+      from sys_users su
+      where 1=1
+      <if test="departmentId != null">
+        and su.department_id = #{departmentId}
+      </if>
+      <if test="userType != null">
+        and su.user_type = #{userType}
+      </if>
+
     </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from sys_users

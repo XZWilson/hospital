@@ -108,7 +108,7 @@ public class SysUsersServiceImpl implements SysUsersService {
      **/
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     @Override
-    public List<UserDto> getDoctorByDepartment(Long departmentId) {
-        return this.sysUsersMapper.selectByDepartMent(departmentId);
+    public List<UserDto> getDoctorByDepartment(Long departmentId, Byte userType) {
+        return this.sysUsersMapper.selectByDpIdAndType(departmentId, userType);
     }
 }

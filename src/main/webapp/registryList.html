@@ -220,7 +220,7 @@
                 },
                 getDoctorList(){
                     this.searchForm.userId = "";
-                    axios.get("users/getDoctorByDepartId",
+                    axios.get("users/getDoctorByDpIdAndType",
                         {params:{departmentId:this.searchForm.departmentId}}).then(ret=>{
                         if (ret.data.code == 1){
                             this.docterList = ret.data.data;
