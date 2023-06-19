@@ -76,17 +76,20 @@
           parameterType="com.g1.hospital.dto.RegCondition"
           resultType="com.g1.hospital.dto.RegistryDto">
     select
-      rg.`id`,
-      pa.`name` pName,
-      pa.`sex` pSex,
-      pa.`id_card` pCardId,
-      dp.`name` dName,
-      rg.`registry_time` regTime,
-      rg.`created_time` createTime,
-      rg.`status`
+    rg.`id`,
+    pa.`id` pId,
+    pa.`name` pName,
+    pa.`sex` pSex,
+    pa.`id_card` pCardId,
+    dp.`name` dName,
+    su.`user_name` userName,
+    rg.`registry_time` regTime,
+    rg.`created_time` createTime,
+    rg.`status`
     from registry rg
-      left join patient pa on rg.`patient_id` = pa.`id`
-      left join department dp on rg.`department_id` = dp.`id`
+    left join patient pa on rg.`patient_id` = pa.`id`
+    left join department dp on rg.`department_id` = dp.`id`
+    left join sys_users su on rg.`user_id` = su.`id`
     where 1=1
     <if test="cardId != null and cardId != ''">
       and pa.id_card = #{cardId}

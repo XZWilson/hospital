@@ -12,10 +12,12 @@ import java.util.Date;
  */
 public class RegistryDto {
     private Long id;
+    private Long pid;
     private String pName;
     private Byte pSex;
     private String pCardId;
     private String dName;
+    private String userName;
     private Byte status;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date createTime;
@@ -25,12 +27,14 @@ public class RegistryDto {
     public RegistryDto() {
     }
 
-    public RegistryDto(Long id, String pName, Byte pSex, String pCardId, String dName, Byte status, Date createTime, Date regTime) {
+    public RegistryDto(Long id, Long pid, String pName, Byte pSex, String pCardId, String dName, String userName, Byte status, Date createTime, Date regTime) {
         this.id = id;
+        this.pid = pid;
         this.pName = pName;
         this.pSex = pSex;
         this.pCardId = pCardId;
         this.dName = dName;
+        this.userName = userName;
         this.status = status;
         this.createTime = createTime;
         this.regTime = regTime;
@@ -50,6 +54,22 @@ public class RegistryDto {
      */
     public void setId(Long id) {
         this.id = id;
+    }
+
+    /**
+     * 获取
+     * @return pid
+     */
+    public Long getPid() {
+        return pid;
+    }
+
+    /**
+     * 设置
+     * @param pid
+     */
+    public void setPid(Long pid) {
+        this.pid = pid;
     }
 
     /**
@@ -118,6 +138,22 @@ public class RegistryDto {
 
     /**
      * 获取
+     * @return userName
+     */
+    public String getUserName() {
+        return userName;
+    }
+
+    /**
+     * 设置
+     * @param userName
+     */
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    /**
+     * 获取
      * @return status
      */
     public Byte getStatus() {
@@ -165,6 +201,6 @@ public class RegistryDto {
     }
 
     public String toString() {
-        return "RegistryDto{id = " + id + ", pName = " + pName + ", pSex = " + pSex + ", pCardId = " + pCardId + ", dName = " + dName + ", status = " + status + ", createTime = " + createTime + ", regTime = " + regTime + "}";
+        return "RegistryDto{id = " + id + ", pid = " + pid + ", pName = " + pName + ", pSex = " + pSex + ", pCardId = " + pCardId + ", dName = " + dName + ", userName = " + userName + ", status = " + status + ", createTime = " + createTime + ", regTime = " + regTime + "}";
     }
 }
