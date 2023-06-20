@@ -10,6 +10,20 @@
     <result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
     <result column="updated_time" jdbcType="TIMESTAMP" property="updatedTime" />
   </resultMap>
+  <resultMap id="MainSubResultMap" type="com.g1.hospital.dto.MenuDto">
+    <id column="main_id" jdbcType="BIGINT" property="id" />
+    <result column="main_menu_name" jdbcType="VARCHAR" property="menuName" />
+    <result column="main_menu_url" jdbcType="VARCHAR" property="menuUrl" />
+    <result column="main_menu_type" jdbcType="TINYINT" property="menuType" />
+    <result column="main_parent_id" jdbcType="BIGINT" property="parentId" />
+    <collection property="menuDtos" ofType="com.g1.hospital.dto.MenuDto">
+      <id column="sub_id" jdbcType="BIGINT" property="id" />
+      <result column="sub_menu_name" jdbcType="VARCHAR" property="menuName" />
+      <result column="sub_menu_url" jdbcType="VARCHAR" property="menuUrl" />
+      <result column="sub_menu_type" jdbcType="TINYINT" property="menuType" />
+      <result column="sub_parent_id" jdbcType="BIGINT" property="parentId" />
+    </collection>
+  </resultMap>
   <sql id="Example_Where_Clause">
     <where>
       <foreach collection="oredCriteria" item="criteria" separator="or">
@@ -62,6 +76,34 @@
     <include refid="Base_Column_List" />
     from sys_menus
     where id = #{id,jdbcType=BIGINT}
+  </select>
+<!-- 通过用户id查询一级菜单及其子菜单 -->
+  <select id="selectByUId" parameterType="long" resultMap="MainSubResultMap">
+    select
+      main.id main_id,
+      main.menu_name main_menu_name,
+      main.`menu_url` main_menu_url,
+      main.`menu_type` main_menu_type,
+      main.`parent_id` main_parent_id,
+      sm.id sub_id,
+      sm.menu_name sub_menu_Name,
+      sm.`menu_url` sub_menu_Url,
+      sm.`menu_type` sub_menu_Type,
+      sm.`parent_id` sub_parent_Id
+    from
+      (select
+         sm.id,
+         sm.`menu_name`,
+         sm.`menu_url`,
+         sm.`menu_type`,
+         sm.`parent_id`
+       from sys_users_roles sur
+              left join sys_roles sr on sur.`role_id` = sr.`id`
+              left join sys_roles_menus srm on sr.`id` = srm.`role_id`
+              left join sys_menus sm on srm.`menu_id` = sm.`id`
+       where sur.`user_id` = #{uId}) main
+        left join sys_menus sm
+                  on main.id = sm.`parent_id`;
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from sys_menus

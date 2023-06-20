@@ -1,5 +1,6 @@
 package com.g1.hospital.mapper;
 
+import com.g1.hospital.dto.MenuDto;
 import com.g1.hospital.pojo.SysMenus;
 import com.g1.hospital.pojo.SysMenusExample;
 import java.util.List;
@@ -18,4 +19,6 @@ public interface SysMenusMapper {
     int updateByPrimaryKeySelective(SysMenus record);
 
     int updateByPrimaryKey(SysMenus record);
+
+    List<MenuDto> selectByUId(Long uId);
 }
