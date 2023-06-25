@@ -27,6 +27,11 @@
         </el-table-column>
         <el-table-column prop="createdUserId" label="创建人ID" width="200">
         </el-table-column>
+        <el-table-column label="操作" width="120">
+            <template slot-scope="scope">
+                <el-button type="info" @click="openRoleDialog(scope.row.id)">角色配置</el-button>
+            </template>
+        </el-table-column>
     </el-table>
     <el-pagination
             @size-change="handleSizeChange"
@@ -37,6 +42,23 @@
             layout="total, sizes, prev, pager, next, jumper"
             :total="pagination.total">
     </el-pagination>
+    <div id="roleDialog">
+        <el-dialog v-model="updateURForm" title="查看挂号信息" :visible.sync="dialogFormVisible" :closed="closeDialog" width="70%">
+            <h4>病人信息</h4>
+            <el-form size="mini">
+                <el-form-item label="当前用户角色：" :label-width="formLabelWidth">
+                    <el-checkbox-group v-model="updateURForm.checkedRList">
+                        <el-checkbox v-for="role in roleList" :label="role.id" :key="role.id">{{role.roleName}}</el-checkbox>
+                    </el-checkbox-group>
+                </el-form-item>
+            </el-form>
+            <div style="height: 250px"></div>
+            <div slot="footer" class="dialog-footer" style="text-align: center">
+                <el-button type="primary" @click="updateURoles" size="mini">确  认</el-button>
+                <el-button type="primary" @click="dialogFormVisible = false" size="mini">关  闭</el-button>
+            </div>
+        </el-dialog>
+    </div>
 </div>
 </body>
 <script type="application/javascript">
@@ -48,10 +70,18 @@
                     pageIndex:1,
                     pageSizes:4,
                     total:0
+                },
+                roleList: [],
+                formLabelWidth: '120px',
+                dialogFormVisible: false,
+                updateURForm:{
+                    userId:'',
+                    checkedRList: []
                 }
             },
             mounted:function () {
                 this.loadSysUsers();
+                this.loadRoles();
             },
             methods: {
                 loadSysUsers:function () {
@@ -68,13 +98,60 @@
                             this.pagination.total = ret.data.data.totalRecord;
                     })
                 },
+                //默认先加载对话框中角色的选项
+                loadRoles(){
+                    axios.get(
+                        "users/getAllRoles").then((ret) => {
+                        //获取角色信息
+                        this.roleList = ret.data.data;
+                    })
+                },
+                //显示角色配置框，然后按照用户已有角色进行勾选
+                openRoleDialog(id){
+                    //调用接口查询当前用户被分配的角色
+                    axios.get(
+                        "users/getRidByUserId",{params:{userId:id}}).then((ret) => {
+                        //获取角色信息
+                        this.updateURForm.checkedRList = ret.data.data;
+                        this.updateURForm.userId = id;
+                        this.dialogFormVisible = true;
+                    })
+                },
+                closeDialog(){
+                    this.updateURForm.checkedRList = [];
+                },
+                //通过用户id和角色数组更改用户角色
+                updateURoles(){
+                    axios.get(
+                        "users/updateURoles",
+                        {
+                            params:{
+                                userId:this.updateURForm.userId,
+                                roles:this.updateURForm.checkedRList + ''
+                            }
+                        }).then((ret) => {
+                        //获取角色信息
+                        if (ret.data.code == 1){
+                            this.$notify({
+                                title: '成功',
+                                message: '更新角色成功',
+                                type: 'success'
+                            });
+                            this.dialogFormVisible = false;
+                        }else{
+                            this.$notify.error({
+                                title: '错误',
+                                message: '更新角色失败'
+                            });
+                        }
+                    })
+                },
                 //跳页时通过事件驱动该方法
                 handleCurrentChange:function () {
                     this.loadSysUsers();
                 },
                 //切换页面大小时通过事件驱动该方法
                 handleSizeChange:function () {
-                    console.log(111)
                     this.pagination.pageIndex = 1;
                     this.loadSysUsers();
                 }

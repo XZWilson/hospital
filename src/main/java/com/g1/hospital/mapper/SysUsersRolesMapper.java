@@ -18,4 +18,8 @@ public interface SysUsersRolesMapper {
     int updateByPrimaryKeySelective(SysUsersRoles record);
 
     int updateByPrimaryKey(SysUsersRoles record);
+
+    List<Long> selectRoleIdByUserId(Long UserId);
+
+    int deleteByUserId(Long userId);
 }

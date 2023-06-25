@@ -2,8 +2,10 @@ package com.g1.hospital.service.impl;
 
 import com.g1.hospital.dto.UserDto;
 import com.g1.hospital.mapper.SysUsersMapper;
+import com.g1.hospital.mapper.SysUsersRolesMapper;
 import com.g1.hospital.pojo.SysUsers;
 import com.g1.hospital.pojo.SysUsersExample;
+import com.g1.hospital.pojo.SysUsersRoles;
 import com.g1.hospital.service.SysUsersService;
 import com.g1.hospital.utils.MD5Utils;
 import com.g1.hospital.utils.PageParameter;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -26,6 +29,8 @@ import java.util.List;
 public class SysUsersServiceImpl implements SysUsersService {
     @Autowired
     private SysUsersMapper sysUsersMapper;
+    @Autowired
+    private SysUsersRolesMapper surMapper;
     /***
      * @Description //TODO 
      * 
@@ -124,5 +129,22 @@ public class SysUsersServiceImpl implements SysUsersService {
     @Override
     public List<UserDto> getDoctorByDepartment(Long departmentId, Byte userType) {
         return this.sysUsersMapper.selectByDpIdAndType(departmentId, userType);
+    }
+
+    @Override
+    @Transactional
+    public Boolean updateUserRoles(Long userId, List<String> roles) {
+        //暂行方法
+        this.surMapper.deleteByUserId(userId);
+        for (String role:
+             roles) {
+            SysUsersRoles surRoles = new SysUsersRoles();
+            surRoles.setUserId(userId);
+            surRoles.setRoleId(Long.parseLong(role));
+            surRoles.setCreatedTime(new Date());
+            surRoles.setUpdatedTime(new Date());
+            this.surMapper.insertSelective(surRoles);
+        }
+        return true;
     }
 }

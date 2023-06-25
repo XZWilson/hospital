@@ -1,26 +1,26 @@
 package com.g1.hospital.controller;
 
 import com.g1.hospital.dto.UserDto;
+import com.g1.hospital.pojo.SysRoles;
 import com.g1.hospital.pojo.SysUsers;
+import com.g1.hospital.pojo.SysUsersRoles;
+import com.g1.hospital.service.RoleService;
 import com.g1.hospital.service.SysUsersService;
+import com.g1.hospital.service.impl.RoleServiceImpl;
 import com.g1.hospital.utils.MD5Utils;
 import com.g1.hospital.utils.OssFileUpload;
 import com.g1.hospital.utils.PageParameter;
 import com.g1.hospital.utils.Result;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * @Author:Jason Yang
@@ -32,6 +32,8 @@ import java.util.List;
 public class SysUsersController {
     @Autowired
     private SysUsersService sysUsersService;
+    @Autowired
+    private RoleService roleService;
 
     /***
      * @Description //TODO 
@@ -204,5 +206,45 @@ public class SysUsersController {
         } catch (Exception e) {
             return new Result("2","检测存在异常:" + e.getMessage());
         }
+    }
+
+    @RequestMapping("getAllRoles")
+    @ResponseBody
+    public Result<List<SysRoles>> getAllRoles(){
+        try {
+            List<SysRoles> allRoles = this.roleService.getAllRoles();
+            return new Result<List<SysRoles>>("1","查询全部角色成功",allRoles);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new Result<>("0","查询全部角色失败");
+    }
+
+    @RequestMapping("getRidByUserId")
+    @ResponseBody
+    public Result<List<Long>> getRidByUserId(Long userId){
+        try {
+            List<Long> roles = this.roleService.getRolesByUserId(userId);
+            return new Result<List<Long>>("1","通过用户编号查询已分配角色成功",roles);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new Result<>("0","通过用户编号查询已分配角色失败");
+    }
+
+    @GetMapping("updateURoles")
+    @ResponseBody
+    public Result<String> updateURoles(@RequestParam(value = "userId") Long userId,
+                                       @RequestParam(value = "roles") String newRolesStr){
+        try {
+            String[] str = newRolesStr.split(",");
+            List<String> newRoles = Arrays.asList(newRolesStr.split(","));
+            //调用service层更新用户角色的方法
+            this.sysUsersService.updateUserRoles(userId,newRoles);
+            return new Result<>("1","更新角色成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new Result<>("0","更新角色失败");
     }
 }

@@ -14,4 +14,5 @@ public interface SysUsersService {
     SysUsers getUserById(Long id);
     public List<SysUsers> getUsersBySchedule(Long departmentId, Byte sign);
     List<UserDto> getDoctorByDepartment(Long departmentId,Byte userType);
+    Boolean updateUserRoles(Long userId,List<String> roles);
 }

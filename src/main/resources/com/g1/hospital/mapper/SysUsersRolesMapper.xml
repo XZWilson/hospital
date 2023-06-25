@@ -61,11 +61,18 @@
     from sys_users_roles
     where id = #{id,jdbcType=BIGINT}
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    <select id="selectRoleIdByUserId" parameterType="java.lang.Long" resultType="java.lang.Long">
+      select role_id from sys_users_roles where user_id = #{UserId}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from sys_users_roles
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <insert id="insert" parameterType="com.g1.hospital.pojo.SysUsersRoles">
+    <delete id="deleteByUserId" parameterType="long">
+      delete from sys_users_roles
+      where user_id = #{userId}
+    </delete>
+    <insert id="insert" parameterType="com.g1.hospital.pojo.SysUsersRoles">
     insert into sys_users_roles (id, user_id, role_id, 
       created_time, updated_time)
     values (#{id,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{roleId,jdbcType=BIGINT}, 

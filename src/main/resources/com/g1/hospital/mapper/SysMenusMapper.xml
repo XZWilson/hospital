@@ -103,7 +103,8 @@
               left join sys_menus sm on srm.`menu_id` = sm.`id`
        where sur.`user_id` = #{uId}) main
         left join sys_menus sm
-                  on main.id = sm.`parent_id`;
+                  on main.id = sm.`parent_id`
+    order by main.id asc,sm.id asc
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from sys_menus
