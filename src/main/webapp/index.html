@@ -74,7 +74,7 @@
                 <!--顶部导航-->
                 <el-dropdown style="margin-left: auto;padding-right: 20px">
                          <span class="el-dropdown-link">
-                             <img src="img/face.png" class="face"/>
+                             <img :src="userInfo.headUrl" class="face"/>
                              <div class="text">管理员：{{userInfo.userName}}<i class="el-icon-arrow-down el-icon--right"></i></div>
                           </span>
                     <el-dropdown-menu slot="dropdown">
@@ -142,54 +142,86 @@
 <script type="application/javascript">
     new Vue({
             el: '#div',
-            data: {
-                dialogFormVisible:false,
-                userInfo:{
-                    account:"",
-                    createdTime:"",
-                    createdUserId:0,
-                    id:0,
-                    password:"",
-                    userName:""
-                },
-                userForm: {
-                    account: '',
-                    userName: '',
-                    password: '',
-                    checkPass: '',
-                    userType: '',
-                    headUrl: '',
-					roleName:''
-                },
-                rules: {
-                    password: [
-                        { required: true, message: '密码不能为空', trigger: 'blur' }
-                    ],
-                    checkPass: [
-                        { required: true, message: '密码不能为空', trigger: 'blur' }
-                    ]
-                },
-                url: 'img/img.jpg',
-                iframeSrc: 'welcome.html',
-                menuList:[
-                    {
-                        "id": 0,
-                        "menuName": "",
-                        "menuUrl": null,
-                        "menuType": 0,
-                        "parentId": null,
-                        "menuDtos": [
-                            {
-                                "id": "",
-                                "menuName": "",
-                                "menuUrl": "",
-                                "menuType": 0,
-                                "parentId": 0,
-                                "menuDtos": null
+            data(){
+                //新密码不能和旧密码一致
+                var checkNewPass = (rule, value, callback) =>{
+                    axios.get(
+                        "users/checkNewPass",
+                        {params:{uId:this.userInfo.id,newPass:value}}
+                    ).then(
+                        ret => {
+                            if (ret.data.code == 1){
+                                callback();
+                            }else if(ret.data.code == 0){
+                                callback(new Error("新旧密码不能一致"));
+                            }else {
+                                callback(new Error("新旧密码检测异常"))
                             }
-                        ]
+                        }
+                    )
+                }
+
+                var checkSamePass = (rule, value, callback) =>{
+                    if (this.userForm.password.length > 0 &&
+                        value.length > 0 &&
+                        value !== this.userForm.password){
+                        callback(new Error("两次输入的密码不一致"))
                     }
-                ]
+                    callback();
+                }
+
+                return {
+                    dialogFormVisible:false,
+                    userInfo:{
+                        account:"",
+                        createdTime:"",
+                        createdUserId:0,
+                        id:0,
+                        password:"",
+                        userName:""
+                    },
+                    userForm: {
+                        account: '',
+                        userName: '',
+                        password: '',
+                        checkPass: '',
+                        userType: '',
+                        headUrl: '',
+                        roleName:''
+                    },
+                    rules: {
+                        password: [
+
+                            { validator: checkNewPass , trigger: 'blur' },
+                            { required: true, message: '密码不能为空', trigger: 'blur' }
+                        ],
+                        checkPass: [
+                            { validator: checkSamePass , trigger: 'blur' },
+                            { required: true, message: '密码不能为空', trigger: 'blur' }
+                        ]
+                    },
+                    url: 'img/img.jpg',
+                    iframeSrc: 'welcome.html',
+                    menuList:[
+                        {
+                            "id": 0,
+                            "menuName": "",
+                            "menuUrl": null,
+                            "menuType": 0,
+                            "parentId": null,
+                            "menuDtos": [
+                                {
+                                    "id": "",
+                                    "menuName": "",
+                                    "menuUrl": "",
+                                    "menuType": 0,
+                                    "parentId": 0,
+                                    "menuDtos": null
+                                }
+                            ]
+                        }
+                    ]
+                }
             },
             mounted:function () {
               this.userInfo = JSON.parse(localStorage.getItem("userInfo"));
@@ -201,11 +233,15 @@
                 },
                 showEditUserView(){
                     this.dialogFormVisible=true;
+                    this.userForm.userName = this.userInfo.userName;
                 },
                 logout(){
                     //请求后台，在Servlet中注销用户
                     axios.get("users/logout").then(
                         ret => {
+                            if (JSON.parse(localStorage.getItem("userInfo")) != null){
+                                localStorage.removeItem("userInfo");
+                            }
                             //跳转到登录页面
                             location.href='login.html';
                         }

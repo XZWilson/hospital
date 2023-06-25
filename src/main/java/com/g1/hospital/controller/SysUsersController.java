@@ -191,4 +191,18 @@ public class SysUsersController {
             return new Result("0","通过就诊科室查询医师异常，原因是：" + e.getMessage());
         }
     }
+
+    @RequestMapping("checkNewPass")
+    @ResponseBody
+    public Result checkNewPass(Long uId, String newPass){
+        try {
+            if (!this.sysUsersService.getUserById(uId).getPassword().equals(MD5Utils.md5Encrypt(newPass))){
+                return new Result("1","新旧密码不同，可继续");
+            }else{
+                return new Result("0","新旧密码一致");
+            }
+        } catch (Exception e) {
+            return new Result("2","检测存在异常:" + e.getMessage());
+        }
+    }
 }

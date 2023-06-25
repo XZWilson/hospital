@@ -83,7 +83,21 @@ public class SysUsersServiceImpl implements SysUsersService {
     public int addSysUser(SysUsers sysUsers) {
         return this.sysUsersMapper.insertSelective(sysUsers);
     }
+
     
+    /***
+     * @Description //TODO 
+     * 
+     * @Param [id]
+     * @return com.g1.hospital.pojo.SysUsers
+     * @Date 2023/6/21 8:26
+     * @Author sugarmelon
+     **/
+    @Override
+    public SysUsers getUserById(Long id) {
+        return this.sysUsersMapper.selectByPrimaryKey(id);
+    }
+
     /**
      * @Description //TODO 
      * 
